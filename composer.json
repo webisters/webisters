@@ -1,0 +1,66 @@
+{
+    "name": "webisters/webisters",
+    "description": "Webisters Command Line Tool",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "Webisters",
+        "cli",
+        "framework",
+        "installer",
+        "preload",
+        "tool"
+    ],
+    "authors": [
+        {
+            "name": "Hafiz Muhammad Moaz",
+            "email": "hafizmoazkhalid@gmail.com",
+            "homepage": "https://github.com/HafizMMoaz"
+        }
+    ],
+    "homepage": "https://webisters.com/packages/webisters",
+    "support": {
+        "email": "support@webisters.com",
+        "issues": "https://github.com/webisters/webisters/issues",
+        "forum": "https://github.com/webisters/forum",
+        "source": "https://github.com/webisters/webisters",
+        "docs": "https://webisters.com"
+    },
+    "funding": [
+        {
+            "type": "Webisters Sponsor",
+            "url": "https://webisters.com/sponsor"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "webisters/framework": "^1.0"
+    },
+    "require-dev": {
+        "webisters/coding-standard": "^1.0",
+        "phpunit/phpunit": "^9.5"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Webisters\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "bin": [
+        "bin/webisters"
+    ],
+    "config": {
+
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}
+
+
