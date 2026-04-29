@@ -12,6 +12,12 @@ Webisters Command Line Tool This library is designed for reuse in Composer-based
 composer require webisters/webisters
 ```
 
+If Packagist only has the development branch published, use:
+
+```bash
+composer global require webisters/webisters:dev-main --prefer-stable
+```
+
 ## Requirements
 - PHP: `>=8.2`
 - Composer: Compatible with Composer 2.x.
