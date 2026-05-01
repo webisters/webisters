@@ -93,7 +93,7 @@ abstract class NewCommand extends Command
     {
         CLI::info('Downloading template via composer create-project...');
 
-        $parent = $this->normalizePath($this->joinPath($directory, '..'));
+        $parent = $this->normalizePath((string) \dirname($directory));
         $target = (string) \basename($directory);
         if ($target === '' || $target === '.' || $target === '..') {
             CLI::error('Invalid target directory name.', null);
