@@ -1,42 +1,58 @@
-# Webisters Webisters
+# Webisters CLI
 
-Webisters Command Line Tool This library is designed for reuse in Composer-based PHP applications.
-
-## What It Provides
-- Command-line friendly workflows for local automation and maintenance tasks.
-- Framework-level conventions that speed up project development.
-- Reusable PHP components intended for integration into larger applications.
-
-## Installation
-```bash
-composer require webisters/webisters
-```
-
-If Packagist only has the development branch published, use:
-
-```bash
-composer global require webisters/webisters:dev-main --prefer-stable
-```
+Webisters is a command line tool for creating and managing Webisters projects.
 
 ## Requirements
-- PHP: `>=8.2`
-- Composer: Compatible with Composer 2.x.
+- PHP `>=8.2`
+- Composer 2.x
 
-## Quick Start
-```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-
-// Initialize the package and integrate it into your application flow.
-```
-Next step: review the package source and adapt initialization to your use case.
-
-## Development
+## Install (Global)
 ```bash
-composer install
-vendor/bin/phpunit
+composer global require webisters/webisters
 ```
-Follow consistent coding style and run available linters before opening pull requests.
+
+### Windows: enable `webisters` command (recommended)
+This adds Composer's global `bin-dir` to your user PATH.
+
+```bash
+composer global exec webisters setup
+```
+
+Restart your terminal after running setup.
+
+## Create a Project
+Preferred (after PATH setup):
+
+```bash
+webisters new-app my-app
+webisters new-api my-api
+webisters new-one my-one
+webisters new-site my-site
+```
+
+No-PATH fallback (works on any OS):
+
+```bash
+composer global exec webisters new-app my-app
+```
+
+The CLI will download the project template using `composer create-project` and then ask whether to run `composer install`.
+
+## Commands
+- `setup` (Windows): adds Composer global bin-dir to PATH
+- `new-app <name>`: create an App project
+- `new-api <name>`: create an API project
+- `new-one <name>`: create a One project
+- `new-site <name>`: create a Static Site project
+
+You can also use the grouped form:
+
+```bash
+webisters new app <name>
+webisters new api <name>
+webisters new one <name>
+webisters new site <name>
+```
 
 ## Support
 - Issues: https://github.com/webisters/webisters/issues
