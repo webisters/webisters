@@ -23,6 +23,32 @@ use RecursiveIteratorIterator;
 abstract class NewCommand extends Command
 {
     protected ?string $projectNameFromPrompt = null;
+    protected bool $headerShown = false;
+
+    protected function showHeaderOnce() : void
+    {
+        if ($this->headerShown) {
+            return;
+        }
+        $this->headerShown = true;
+        $this->showHeader();
+        CLI::newLine();
+    }
+
+    protected function showHeader() : void
+    {
+        $text = <<<'EOL'
+        $$\      $$\ $$$$$$$$\ $$$$$$$\  $$$$$$\  $$$$$$\ $$$$$$$$\ $$$$$$$$\ $$$$$$$\   $$$$$$\  
+        $$ | $\  $$ |$$  _____|$$  __$$\ \_$$  _|$$  __$$\\__$$  __|$$  _____|$$  __$$\ $$  __$$\ 
+        $$ |$$$\ $$ |$$ |      $$ |  $$ |  $$ |  $$ /  \__|  $$ |   $$ |      $$ |  $$ |$$ /  \__|
+        $$ $$ $$\$$ |$$$$$\    $$$$$$$\ |  $$ |  \$$$$$$\    $$ |   $$$$$\    $$$$$$$  |\$$$$$$\  
+        $$$$  _$$$$ |$$  __|   $$  __$$\   $$ |   \____$$\   $$ |   $$  __|   $$  __$$<  \____$$\ 
+        $$$  / \$$$ |$$ |      $$ |  $$ |  $$ |  $$\   $$ |  $$ |   $$ |      $$ |  $$ |$$\   $$ |
+        $$  /   \$$ |$$$$$$$$\ $$$$$$$  |$$$$$$\ \$$$$$$  |  $$ |   $$$$$$$$\ $$ |  $$ |\$$$$$$  |
+        \__/     \__|\________|\_______/ \______| \______/   \__|   \________|\__|  \__| \______/ 
+        EOL;
+        CLI::write($text, ForegroundColor::green);
+    }
 
     protected function monorepoRoot() : string
     {
@@ -61,6 +87,8 @@ abstract class NewCommand extends Command
 
     protected function create(string $package, string $name) : void
     {
+        $this->showHeaderOnce();
+
         $directory = $this->getDirectoryPath();
 
         $source = $this->getTemplateSource($package);
