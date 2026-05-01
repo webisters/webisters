@@ -34,11 +34,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "webisters/framework": "^1.0",
-        "webisters/app": "^1.0",
-        "webisters/api": "^1.0",
-        "webisters/one": "^1.0",
-        "webisters/site": "^1.0"
+        "webisters/framework": "^1.0"
     },
     "require-dev": {
         "webisters/coding-standard": "^1.0",

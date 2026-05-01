@@ -61,13 +61,18 @@ abstract class NewCommand extends Command
 
     protected function create(string $package, string $name) : void
     {
-        $directory = $this->getDirectory();
+        $directory = $this->getDirectoryPath();
+
         $source = $this->getTemplateSource($package);
-        if ( ! $source) {
-            CLI::error('Package webisters/' . $package . ' not found');
-            return;
+        if ($source) {
+            $this->ensureDirectoryExists($directory);
+            $this->copyDir($source, $directory);
+        } else {
+            if (!$this->createProjectWithComposer('webisters/' . $package, $directory)) {
+                return;
+            }
         }
-        $this->copyDir($source, $directory);
+
         $this->ensureProjectCliFile($directory);
 
         $projectName = $this->resolveProjectName($directory);
@@ -81,6 +86,66 @@ abstract class NewCommand extends Command
 
         if ($this->shouldRunComposerInstall()) {
             $this->runComposerInstall($directory);
+        }
+    }
+
+    protected function createProjectWithComposer(string $package, string $directory) : bool
+    {
+        CLI::info('Downloading template via composer create-project...');
+
+        $parent = $this->normalizePath($this->joinPath($directory, '..'));
+        $target = (string) \basename($directory);
+        if ($target === '' || $target === '.' || $target === '..') {
+            CLI::error('Invalid target directory name.', null);
+            return false;
+        }
+
+        if (!\is_dir($parent)) {
+            if (!@\mkdir($parent, 0755, true) && !\is_dir($parent)) {
+                CLI::error('Unable to create parent directory: ' . $parent, null);
+                return false;
+            }
+        }
+
+        $cmd = 'composer create-project --no-interaction --no-install '
+            . \escapeshellarg($package)
+            . ' '
+            . \escapeshellarg($target);
+
+        $currentDirectory = (string) \getcwd();
+        if (!\chdir($parent)) {
+            CLI::error('Unable to change directory for composer create-project.', null);
+            return false;
+        }
+
+        try {
+            $exitCode = 1;
+            \passthru($cmd, $exitCode);
+        } finally {
+            \chdir($currentDirectory);
+        }
+
+        if ($exitCode !== 0 || !\is_dir($directory)) {
+            CLI::error('Failed to download template. Make sure composer is installed and the package exists on Packagist.', null);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function ensureDirectoryExists(string $directory) : void
+    {
+        if (\file_exists($directory)) {
+            CLI::error(\sprintf('The path "%s" already exists', $directory));
+        }
+
+        if (!\mkdir($directory, 0755, true) && !\is_dir($directory)) {
+            CLI::error(\sprintf('Directory "%s" could not be created', $directory));
+        }
+
+        $realpath = \realpath($directory);
+        if ($realpath === false) {
+            CLI::error(\sprintf('Was not possible get the realpath of "%s"', $directory));
         }
     }
 
@@ -441,7 +506,7 @@ PHP;
         }
     }
 
-    protected function getDirectory() : string
+    protected function getDirectoryPath() : string
     {
         $directory = $this->console->getArgument(0);
         if ($directory === null) {
@@ -452,22 +517,9 @@ PHP;
         }
         $directory = $this->normalizePath($directory);
         if (\file_exists($directory)) {
-            CLI::error(
-                \sprintf('The path "%s" already exists', $directory)
-            );
+            CLI::error(\sprintf('The path "%s" already exists', $directory));
         }
-        if ( ! \mkdir($directory, 0755, true) && ! \is_dir($directory)) {
-            CLI::error(
-                \sprintf('Directory "%s" could not be created', $directory)
-            );
-        }
-        $realpath = \realpath($directory);
-        if ($realpath === false) {
-            CLI::error(
-                \sprintf('Was not possible get the realpath of "%s"', $directory)
-            );
-        }
-        return $this->normalizePath($realpath); // @phpstan-ignore-line
+        return $directory;
     }
 
     protected function promptDirectory() : string

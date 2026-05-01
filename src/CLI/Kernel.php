@@ -8,6 +8,7 @@ use Webisters\Commands\NewApp;
 use Webisters\Commands\NewApi;
 use Webisters\Commands\NewOne;
 use Webisters\Commands\NewSite;
+use Webisters\Commands\Setup;
 
 final class Kernel
 {
@@ -26,6 +27,7 @@ final class Kernel
 
         $console = new Console();
         $console->addCommand(Index::class);
+        $console->addCommand(Setup::class);
         $console->addCommand(NewApp::class);
         $console->addCommand(NewApi::class);
         $console->addCommand(NewOne::class);

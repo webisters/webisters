@@ -6,8 +6,6 @@ foreach (array_filter([
     __DIR__ . '/../vendor/autoload.php',
     dirname(__DIR__, 2) . '/vendor/autoload.php',
     dirname(__DIR__, 3) . '/vendor/autoload.php',
-    dirname(__DIR__, 3) . '/projects/app/vendor/autoload.php',
-    dirname(__DIR__, 3) . '/projects/one/vendor/autoload.php',
 ]) as $autoload) {
     if (is_file($autoload)) {
         require $autoload;
