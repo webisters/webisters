@@ -6,6 +6,67 @@ Webisters is a command line tool for creating and managing Webisters projects.
 - PHP `>=8.2`
 - Composer 2.x
 
+### PHP extensions
+- Required: `ext-intl`, `ext-sodium`, `ext-gd` — enable these extensions before installing the CLI or framework to avoid runtime errors.
+
+#### Quick enablement notes
+- Windows: enable the extensions in your `php.ini` (uncomment `extension=intl`, `extension=sodium`, `extension=gd`) and restart your terminal/web server.
+- Ubuntu/Debian (example):
+
+```bash
+sudo apt update
+sudo apt install php-intl php-sodium php-gd
+sudo systemctl restart php8.2-fpm # or restart your PHP service
+```
+
+## Included libraries
+The Webisters framework repository includes many reusable libraries located under the `libraries/` directory. Enable the PHP extensions listed below before installing to avoid installation or runtime errors.
+
+- autoload
+- cache
+- cli
+- coding-standard
+- config
+- crypto
+- database
+- database-extra
+- date
+- debug
+- dev-commands
+- email
+- events
+- factories
+- front
+- helpers
+- http
+- http-client
+- image
+- language
+- log
+- minify
+- mvc
+- pagination
+- routing
+- session
+- testing
+- theme
+- validation
+
+## Extensions required by libraries
+These extensions are declared in the individual libraries' `composer.json` files. Make sure the following extensions are enabled on your system before installing the framework or any packages.
+
+- `ext-intl` — required by: `autoload`, `date`, `language`, `validation`
+- `ext-sodium` — required by: `crypto`
+- `ext-gd` — required by: `image`
+- `ext-json` — required by: `cache`, `date`, `http`, `http-client`, `image`, `mvc`, `pagination`
+- `ext-fileinfo` — required by: `email`, `http`, `http-client`, `validation`
+- `ext-curl` — required by: `http-client`
+- `ext-mysqli` — required by: `database`, `mvc`
+- `ext-simplexml` — required by: `config`
+- `ext-dom`, `ext-libxml` — required by: `minify`
+
+If any of these extensions are missing you may see errors during `composer install` or when running the framework. See the quick enablement notes above for common platform commands, or consult your OS / PHP distribution documentation for how to enable extensions.
+
 ## Install (Global)
 ```bash
 composer global require webisters/webisters
