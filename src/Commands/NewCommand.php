@@ -25,6 +25,19 @@ abstract class NewCommand extends Command
     protected ?string $projectNameFromPrompt = null;
     protected bool $headerShown = false;
 
+    /**
+     * PHP extensions that must be enabled before creating a project. The
+     * runtime extensions are required by the framework libraries; `openssl`
+     * and `zip` are required by Composer itself to fetch and extract packages
+     * during `composer create-project`.
+     *
+     * @var array<int, string>
+     */
+    protected array $requiredExtensions = [
+        'intl', 'sodium', 'gd', 'mysqli', 'curl', 'fileinfo',
+        'json', 'simplexml', 'dom', 'libxml', 'openssl', 'zip',
+    ];
+
     protected function showHeaderOnce() : void
     {
         if ($this->headerShown) {
@@ -48,6 +61,47 @@ abstract class NewCommand extends Command
         \__/     \__|\________|\_______/ \______| \______/   \__|   \________|\__|  \__| \______/ 
         EOL;
         CLI::write($text, ForegroundColor::green);
+    }
+
+    /**
+     * Verify all required PHP extensions are enabled before attempting an
+     * install. On failure it prints the missing extensions plus how to enable
+     * them, and returns false so the caller can abort cleanly.
+     */
+    protected function ensureRequiredExtensions() : bool
+    {
+        $missing = [];
+        foreach ($this->requiredExtensions as $extension) {
+            if (!\extension_loaded($extension)) {
+                $missing[] = $extension;
+            }
+        }
+
+        if ($missing === []) {
+            return true;
+        }
+
+        CLI::error('Missing required PHP extensions: ' . \implode(', ', $missing), null);
+        CLI::newLine();
+        CLI::write('Enable the extensions above, then run the command again.', ForegroundColor::yellow);
+        CLI::write(
+            '  Windows: uncomment the matching "extension=..." lines in your php.ini'
+            . ' (locate it with "php --ini"), then restart your terminal.',
+            ForegroundColor::yellow
+        );
+        CLI::write(
+            '  Ubuntu/Debian: sudo apt install '
+            . \implode(' ', \array_map(static fn (string $e) : string => 'php-' . $e, $missing)),
+            ForegroundColor::yellow
+        );
+        CLI::write('  Verify with: php -m', ForegroundColor::yellow);
+        CLI::newLine();
+        CLI::write(
+            'Details: https://docs.webisters.com/guides/webisters/#requirements',
+            ForegroundColor::yellow
+        );
+
+        return false;
     }
 
     protected function monorepoRoot() : string
@@ -87,6 +141,10 @@ abstract class NewCommand extends Command
 
     protected function create(string $package, string $name) : void
     {
+        if (!$this->ensureRequiredExtensions()) {
+            return;
+        }
+
         $this->showHeaderOnce();
 
         $directory = $this->getDirectoryPath();
