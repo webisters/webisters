@@ -7,17 +7,25 @@ Webisters is a command line tool for creating and managing Webisters projects.
 - Composer 2.x
 
 ### PHP extensions
-- Required: `ext-intl`, `ext-sodium`, `ext-gd` - enable these extensions before installing the CLI or framework to avoid runtime errors.
+Enable these **before** running `composer global require webisters/webisters` or any `webisters new-*` command. Missing extensions are the most common cause of install failures.
+
+- Framework runtime: `ext-intl`, `ext-sodium`, `ext-gd`, `ext-mysqli`, `ext-curl`, `ext-fileinfo`, `ext-json`, `ext-simplexml`, `ext-dom`, `ext-libxml`
+- Composer download/extract (needed during install): `ext-zip`, `ext-openssl`
+  - Without `zip`, Composer falls back to slow source downloads and shows `Failed to download ... skipping`.
+  - Without `openssl`, Composer cannot fetch packages over HTTPS.
+
+> `json`, `fileinfo`, `openssl`, `dom`, and `simplexml` ship with most PHP builds; `intl`, `sodium`, `gd`, `mysqli`, `curl`, and `zip` usually need to be enabled manually.
 
 #### Quick enablement notes
-- Windows: enable the extensions in your `php.ini` (uncomment `extension=intl`, `extension=sodium`, `extension=gd`) and restart your terminal/web server.
+- Windows: locate your `php.ini` with `php --ini`, uncomment the matching `extension=...` lines (`intl`, `sodium`, `gd`, `mysqli`, `curl`, `openssl`, `zip`), and restart your terminal/web server.
 - Ubuntu/Debian (example):
 
 ```bash
 sudo apt update
-sudo apt install php-intl php-sodium php-gd
+sudo apt install php-intl php-sodium php-gd php-mysqli php-curl php-zip
 sudo systemctl restart php8.2-fpm # or restart your PHP service
 ```
+- Verify with `php -m` (the printed list should include the extensions above).
 
 ## Included libraries
 The Webisters framework repository includes many reusable libraries located under the `libraries/` directory. Enable the PHP extensions listed below before installing to avoid installation or runtime errors.
