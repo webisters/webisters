@@ -49,7 +49,7 @@ jobs:
           php-version: '8.2'
           extensions: intl, sodium, gd, mysqli, curl, fileinfo, json, dom, simplexml, mbstring, zip, redis, memcached, apcu
           coverage: pcov
-          ini-values: apc.enable_cli=1
+          ini-values: apc.enable_cli=1, mysqli.allow_local_infile=1
       - name: Validate composer.json
         run: composer validate --no-check-publish
       - name: Install dependencies
