@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: password
+          MARIADB_DATABASE: framework-tests
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=15
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=10
+      memcached:
+        image: memcached:1.6
+        ports:
+          - 11211:11211
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      DB_SCHEMA: framework-tests
+      REDIS_HOST: 127.0.0.1
+      MEMCACHED_HOST: 127.0.0.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: intl, sodium, gd, mysqli, curl, fileinfo, json, dom, simplexml, mbstring, zip, redis, memcached, apcu
+          coverage: none
+          ini-values: apc.enable_cli=1
+      - name: Validate composer.json
+        run: composer validate --no-check-publish
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Run tests
+        run: |
+          if [ -f vendor/bin/phpunit ] && { [ -f phpunit.xml.dist ] || [ -f phpunit.xml ]; }; then
+            vendor/bin/phpunit
+          else
+            echo "No PHPUnit config or binary found; nothing to test."
+          fi
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: intl, sodium, gd, mysqli, curl, fileinfo, json, dom, simplexml, mbstring, zip
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Coding standard (dry-run)
+        run: |
+          if [ -f vendor/bin/php-cs-fixer ]; then
+            vendor/bin/php-cs-fixer fix --dry-run --diff
+          else
+            echo "php-cs-fixer not installed; skipping."
+          fi
