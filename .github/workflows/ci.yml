@@ -46,7 +46,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: intl, sodium, gd, mysqli, curl, fileinfo, json, dom, simplexml, mbstring, zip, redis, memcached, apcu
           coverage: pcov
           ini-values: apc.enable_cli=1, mysqli.allow_local_infile=1
@@ -70,7 +70,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: intl, sodium, gd, mysqli, curl, fileinfo, json, dom, simplexml, mbstring, zip
           coverage: none
       - name: Install dependencies
