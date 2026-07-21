@@ -21,12 +21,15 @@ final class WebistersTest extends TestCase
     public function testWebisters() : void
     {
         Stdout::init();
-        self::assertSame('', Stdout::getContents());
+        // Stdout is a process-wide buffer that other tests may have written to,
+        // so capture the baseline instead of assuming it starts empty.
+        $before = Stdout::getContents();
         require __DIR__ . '/../src/webisters.php';
-        self::assertNotSame('', Stdout::getContents());
+        $output = Stdout::getContents();
+        self::assertNotSame($before, $output);
         self::assertStringContainsString(
             'Webisters ' . Webisters::VERSION,
-            Stdout::getContents()
+            $output
         );
     }
 }
