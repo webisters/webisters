@@ -9,8 +9,8 @@
  */
 namespace Tests\Commands;
 
-use Webisters\Commands\NewApp;
 use Framework\CLI\Streams\Stdout;
+use Webisters\Commands\NewApp;
 
 /**
  * Class NewAppTest.

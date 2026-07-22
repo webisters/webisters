@@ -9,8 +9,8 @@
  */
 namespace Webisters\Commands;
 
-use Webisters;
 use Framework\CLI\CLI;
+use Webisters;
 
 /**
  * Class Index.

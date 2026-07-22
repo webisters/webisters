@@ -93,7 +93,7 @@ class RouteList extends Command
             return 'Closure';
         }
         $action = \trim($action, '\\');
-        $prefix = 'App\\Controllers\\';
+        $prefix = 'App\Controllers\\';
         if (\str_starts_with($action, $prefix)) {
             $action = \substr($action, \strlen($prefix));
         }

@@ -58,7 +58,7 @@ class MakeController extends NewCommand
             return;
         }
 
-        $namespace = 'App\\Controllers';
+        $namespace = 'App\Controllers';
         if ($segments) {
             $namespace .= '\\' . \implode('\\', $segments);
         }
@@ -72,20 +72,20 @@ class MakeController extends NewCommand
     protected function getTemplate(string $namespace, string $className) : string
     {
         return <<<PHP
-<?php declare(strict_types=1);
+            <?php declare(strict_types=1);
 
-namespace {$namespace};
+            namespace {$namespace};
 
-use Framework\MVC\Controller;
+            use Framework\\MVC\\Controller;
 
-class {$className} extends Controller
-{
-    public function index() : string
-    {
-        return '{$className} works';
-    }
-}
+            class {$className} extends Controller
+            {
+                public function index() : string
+                {
+                    return '{$className} works';
+                }
+            }
 
-PHP;
+            PHP;
     }
 }

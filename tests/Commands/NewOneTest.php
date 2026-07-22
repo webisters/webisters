@@ -9,8 +9,8 @@
  */
 namespace Tests\Commands;
 
-use Webisters\Commands\NewOne;
 use Framework\CLI\Streams\Stdout;
+use Webisters\Commands\NewOne;
 
 /**
  * Class NewOneTest.

@@ -14,15 +14,15 @@ if (is_file(__DIR__ . '/../../../autoload.php')) {
     require __DIR__ . '/../vendor/autoload.php';
 }
 
-use Webisters\Commands\Index;
-use Webisters\Commands\RouteList;
-use Webisters\Commands\MakeView;
-use Webisters\Commands\MakeModel;
-use Webisters\Commands\MakeController;
-use Webisters\Commands\NewApp;
-use Webisters\Commands\NewApi;
-use Webisters\Commands\NewOne;
 use Framework\CLI\Console;
+use Webisters\Commands\Index;
+use Webisters\Commands\MakeController;
+use Webisters\Commands\MakeModel;
+use Webisters\Commands\MakeView;
+use Webisters\Commands\NewApi;
+use Webisters\Commands\NewApp;
+use Webisters\Commands\NewOne;
+use Webisters\Commands\RouteList;
 
 $console = new Console();
 $console->addCommand(Index::class);

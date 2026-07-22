@@ -9,8 +9,8 @@
  */
 namespace Tests\Commands;
 
-use Webisters;
 use Framework\CLI\Streams\Stdout;
+use Webisters;
 
 /**
  * Class IndexTest.

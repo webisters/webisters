@@ -58,7 +58,7 @@ class MakeModel extends NewCommand
             return;
         }
 
-        $namespace = 'App\\Models';
+        $namespace = 'App\Models';
         if ($segments) {
             $namespace .= '\\' . \implode('\\', $segments);
         }
@@ -76,16 +76,16 @@ class MakeModel extends NewCommand
     protected function getTemplate(string $namespace, string $className) : string
     {
         return <<<PHP
-<?php
+            <?php
 
-namespace {$namespace};
+            namespace {$namespace};
 
-use Framework\MVC\Model;
+            use Framework\\MVC\\Model;
 
-class {$className} extends Model
-{
-}
+            class {$className} extends Model
+            {
+            }
 
-PHP;
+            PHP;
     }
 }

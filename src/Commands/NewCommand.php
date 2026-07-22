@@ -51,15 +51,15 @@ abstract class NewCommand extends Command
     protected function showHeader() : void
     {
         $text = <<<'EOL'
-        $$\      $$\ $$$$$$$$\ $$$$$$$\  $$$$$$\  $$$$$$\ $$$$$$$$\ $$$$$$$$\ $$$$$$$\   $$$$$$\  
-        $$ | $\  $$ |$$  _____|$$  __$$\ \_$$  _|$$  __$$\\__$$  __|$$  _____|$$  __$$\ $$  __$$\ 
-        $$ |$$$\ $$ |$$ |      $$ |  $$ |  $$ |  $$ /  \__|  $$ |   $$ |      $$ |  $$ |$$ /  \__|
-        $$ $$ $$\$$ |$$$$$\    $$$$$$$\ |  $$ |  \$$$$$$\    $$ |   $$$$$\    $$$$$$$  |\$$$$$$\  
-        $$$$  _$$$$ |$$  __|   $$  __$$\   $$ |   \____$$\   $$ |   $$  __|   $$  __$$<  \____$$\ 
-        $$$  / \$$$ |$$ |      $$ |  $$ |  $$ |  $$\   $$ |  $$ |   $$ |      $$ |  $$ |$$\   $$ |
-        $$  /   \$$ |$$$$$$$$\ $$$$$$$  |$$$$$$\ \$$$$$$  |  $$ |   $$$$$$$$\ $$ |  $$ |\$$$$$$  |
-        \__/     \__|\________|\_______/ \______| \______/   \__|   \________|\__|  \__| \______/ 
-        EOL;
+            $$\      $$\ $$$$$$$$\ $$$$$$$\  $$$$$$\  $$$$$$\ $$$$$$$$\ $$$$$$$$\ $$$$$$$\   $$$$$$\  
+            $$ | $\  $$ |$$  _____|$$  __$$\ \_$$  _|$$  __$$\\__$$  __|$$  _____|$$  __$$\ $$  __$$\ 
+            $$ |$$$\ $$ |$$ |      $$ |  $$ |  $$ |  $$ /  \__|  $$ |   $$ |      $$ |  $$ |$$ /  \__|
+            $$ $$ $$\$$ |$$$$$\    $$$$$$$\ |  $$ |  \$$$$$$\    $$ |   $$$$$\    $$$$$$$  |\$$$$$$\  
+            $$$$  _$$$$ |$$  __|   $$  __$$\   $$ |   \____$$\   $$ |   $$  __|   $$  __$$<  \____$$\ 
+            $$$  / \$$$ |$$ |      $$ |  $$ |  $$ |  $$\   $$ |  $$ |   $$ |      $$ |  $$ |$$\   $$ |
+            $$  /   \$$ |$$$$$$$$\ $$$$$$$  |$$$$$$\ \$$$$$$  |  $$ |   $$$$$$$$\ $$ |  $$ |\$$$$$$  |
+            \__/     \__|\________|\_______/ \______| \______/   \__|   \________|\__|  \__| \______/ 
+            EOL;
         CLI::write($text, ForegroundColor::green);
     }
 
@@ -136,7 +136,7 @@ abstract class NewCommand extends Command
 
     protected function isAbsolutePath(string $path) : bool
     {
-        return (bool) \preg_match('/^(?:[A-Za-z]:[\\\\\\/]|\\\\\\\\|\\/)/', $path);
+        return (bool) \preg_match('/^(?:[A-Za-z]:[\\\\\/]|\\\\\\\|\/)/', $path);
     }
 
     protected function create(string $package, string $name) : void
@@ -390,7 +390,7 @@ abstract class NewCommand extends Command
     {
         return \str_replace(
             ['\\', '"'],
-            ['\\\\', '\\"'],
+            ['\\\\', '\"'],
             $value
         );
     }
@@ -510,7 +510,7 @@ abstract class NewCommand extends Command
 
             if ($item->isDir()) {
                 $dir = $directory . \DIRECTORY_SEPARATOR . $subPath;
-                if ( ! \mkdir($dir, 0755, true) && ! \is_dir($dir)) {
+                if (!\mkdir($dir, 0755, true) && !\is_dir($dir)) {
                     CLI::error(
                         \sprintf('Directory "%s" could not be created', $dir)
                     );
@@ -525,66 +525,66 @@ abstract class NewCommand extends Command
     {
         $file = $this->joinPath($directory, 'webisters');
         $content = <<<'PHP'
-#!/usr/bin/env php
-<?php
+            #!/usr/bin/env php
+            <?php
 
-declare(strict_types=1);
+            declare(strict_types=1);
 
-$argv = $_SERVER['argv'] ?? [];
-$command = $argv[1] ?? null;
+            $argv = $_SERVER['argv'] ?? [];
+            $command = $argv[1] ?? null;
 
-if ($command === 'start') {
-    $portArg = $argv[2] ?? '8000';
-    if (!ctype_digit($portArg)) {
-        fwrite(STDERR, "Invalid port. Use an integer between 1 and 65535." . PHP_EOL);
-        exit(1);
-    }
-    $port = (int) $portArg;
-    if ($port < 1 || $port > 65535) {
-        fwrite(STDERR, "Invalid port. Use an integer between 1 and 65535." . PHP_EOL);
-        exit(1);
-    }
+            if ($command === 'start') {
+                $portArg = $argv[2] ?? '8000';
+                if (!ctype_digit($portArg)) {
+                    fwrite(STDERR, "Invalid port. Use an integer between 1 and 65535." . PHP_EOL);
+                    exit(1);
+                }
+                $port = (int) $portArg;
+                if ($port < 1 || $port > 65535) {
+                    fwrite(STDERR, "Invalid port. Use an integer between 1 and 65535." . PHP_EOL);
+                    exit(1);
+                }
 
-    $documentRoot = is_dir(__DIR__ . '/public')
-        ? realpath(__DIR__ . '/public')
-        : realpath(__DIR__);
-    if (!is_string($documentRoot) || $documentRoot === '') {
-        fwrite(STDERR, "Cannot resolve document root." . PHP_EOL);
-        exit(1);
-    }
+                $documentRoot = is_dir(__DIR__ . '/public')
+                    ? realpath(__DIR__ . '/public')
+                    : realpath(__DIR__);
+                if (!is_string($documentRoot) || $documentRoot === '') {
+                    fwrite(STDERR, "Cannot resolve document root." . PHP_EOL);
+                    exit(1);
+                }
 
-    $routerScript = is_file($documentRoot . '/index.php')
-        ? $documentRoot . '/index.php'
-        : null;
+                $routerScript = is_file($documentRoot . '/index.php')
+                    ? $documentRoot . '/index.php'
+                    : null;
 
-    echo PHP_EOL . "Starting Server" . PHP_EOL . PHP_EOL;
-    echo 'http://127.0.0.1:' . $port . PHP_EOL . PHP_EOL;
+                echo PHP_EOL . "Starting Server" . PHP_EOL . PHP_EOL;
+                echo 'http://127.0.0.1:' . $port . PHP_EOL . PHP_EOL;
 
-    $cmd = escapeshellarg(PHP_BINARY)
-        . ' -S 127.0.0.1:' . $port
-        . ' -t ' . escapeshellarg($documentRoot);
-    if ($routerScript !== null) {
-        $cmd .= ' ' . escapeshellarg($routerScript);
-    }
-    passthru($cmd, $exitCode);
-    exit((int) $exitCode);
-}
+                $cmd = escapeshellarg(PHP_BINARY)
+                    . ' -S 127.0.0.1:' . $port
+                    . ' -t ' . escapeshellarg($documentRoot);
+                if ($routerScript !== null) {
+                    $cmd .= ' ' . escapeshellarg($routerScript);
+                }
+                passthru($cmd, $exitCode);
+                exit((int) $exitCode);
+            }
 
-if (is_file(__DIR__ . '/boot/app.php')) {
-    require __DIR__ . '/vendor/autoload.php';
-    $app = require __DIR__ . '/boot/app.php';
-    $app->runCli();
-    exit(0);
-}
+            if (is_file(__DIR__ . '/boot/app.php')) {
+                require __DIR__ . '/vendor/autoload.php';
+                $app = require __DIR__ . '/boot/app.php';
+                $app->runCli();
+                exit(0);
+            }
 
-if (is_file(__DIR__ . '/vendor/bin/webisters')) {
-    require __DIR__ . '/vendor/bin/webisters';
-    exit(0);
-}
+            if (is_file(__DIR__ . '/vendor/bin/webisters')) {
+                require __DIR__ . '/vendor/bin/webisters';
+                exit(0);
+            }
 
-fwrite(STDERR, "Unable to find CLI bootstrap for this project." . PHP_EOL);
-exit(1);
-PHP;
+            fwrite(STDERR, "Unable to find CLI bootstrap for this project." . PHP_EOL);
+            exit(1);
+            PHP;
 
         \file_put_contents($file, $content . \PHP_EOL);
         if (\DIRECTORY_SEPARATOR === '/') {

@@ -9,9 +9,9 @@
  */
 namespace Tests;
 
-use Webisters;
 use Framework\CLI\Streams\Stdout;
 use PHPUnit\Framework\TestCase;
+use Webisters;
 
 /**
  * Class WebistersTest.
