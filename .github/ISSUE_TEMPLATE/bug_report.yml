@@ -1,0 +1,96 @@
+name: Bug report
+description: Report something that is broken or behaves incorrectly.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug.
+
+        **Do not report security vulnerabilities here.** See SECURITY.md and email
+        `thewebisters@gmail.com` instead.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I am using a supported version (latest or LTS).
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps or a code snippet that reproduces the problem.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output
+      description: Stack trace, exception message, or log excerpt. Pasted text is auto-formatted, no backticks needed.
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "8.3.10"
+    validations:
+      required: true
+
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      description: Output of `composer show webisters/webisters`.
+      placeholder: "1.2.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: Server (nginx/apache/built-in), database version, relevant config.
+    validations:
+      required: false
