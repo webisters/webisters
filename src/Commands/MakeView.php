@@ -73,8 +73,8 @@ class MakeView extends NewCommand
     protected function getTemplate(string $view) : string
     {
         return <<<PHP
-<h1>View: {$view}</h1>
+            <h1>View: {$view}</h1>
 
-PHP;
+            PHP;
     }
 }

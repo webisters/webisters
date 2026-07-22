@@ -1,11 +1,18 @@
 <?php declare(strict_types=1);
-
+/*
+ * This file is part of Webisters Command Line Tool.
+ *
+ * (c) Hafiz Muhammad Moaz <thewebisters@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Webisters\CLI;
 
 use Framework\CLI\Console;
 use Webisters\Commands\Index;
-use Webisters\Commands\NewApp;
 use Webisters\Commands\NewApi;
+use Webisters\Commands\NewApp;
 use Webisters\Commands\NewOne;
 use Webisters\Commands\NewSite;
 use Webisters\Commands\Setup;

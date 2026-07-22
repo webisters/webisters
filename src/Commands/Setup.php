@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Webisters\Commands;
 
 use Framework\CLI\CLI;
@@ -53,9 +52,8 @@ final class Setup extends Command
 
         $appData = \getenv('APPDATA');
         if (\is_string($appData) && $appData !== '') {
-            $fallback = \rtrim($appData, '/\\') . \DIRECTORY_SEPARATOR . 'Composer' . \DIRECTORY_SEPARATOR
+            return \rtrim($appData, '/\\') . \DIRECTORY_SEPARATOR . 'Composer' . \DIRECTORY_SEPARATOR
                 . 'vendor' . \DIRECTORY_SEPARATOR . 'bin';
-            return $fallback;
         }
 
         return null;
@@ -63,26 +61,26 @@ final class Setup extends Command
 
     private function setupWindowsPath(string $binDir) : void
     {
-        $binDir = \rtrim($binDir, "\\/");
+        $binDir = \rtrim($binDir, '\/');
 
         $ps = <<<'PS'
-$ErrorActionPreference = 'Stop'
-$bin = $args[0]
-$userPath = [Environment]::GetEnvironmentVariable('Path','User')
-if (-not $userPath) { $userPath = '' }
-$parts = $userPath -split ';' | Where-Object { $_ -ne '' }
-$already = $false
-foreach ($p in $parts) {
-    if ($p.TrimEnd('\\') -ieq $bin) { $already = $true; break }
-}
-if ($already) {
-    Write-Output 'already'
-    exit 0
-}
-$newPath = if ($userPath -and -not $userPath.TrimEnd().EndsWith(';')) { $userPath + ';' + $bin } else { $userPath + $bin }
-[Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
-Write-Output 'added'
-PS;
+            $ErrorActionPreference = 'Stop'
+            $bin = $args[0]
+            $userPath = [Environment]::GetEnvironmentVariable('Path','User')
+            if (-not $userPath) { $userPath = '' }
+            $parts = $userPath -split ';' | Where-Object { $_ -ne '' }
+            $already = $false
+            foreach ($p in $parts) {
+                if ($p.TrimEnd('\\') -ieq $bin) { $already = $true; break }
+            }
+            if ($already) {
+                Write-Output 'already'
+                exit 0
+            }
+            $newPath = if ($userPath -and -not $userPath.TrimEnd().EndsWith(';')) { $userPath + ';' + $bin } else { $userPath + $bin }
+            [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+            Write-Output 'added'
+            PS;
 
         $command = 'powershell -NoProfile -ExecutionPolicy Bypass -Command ' . \escapeshellarg($ps)
             . ' -- ' . \escapeshellarg($binDir);
