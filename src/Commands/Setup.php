@@ -61,7 +61,7 @@ final class Setup extends Command
 
     private function setupWindowsPath(string $binDir) : void
     {
-        $binDir = \rtrim($binDir, '\\/');
+        $binDir = \rtrim($binDir, '\/');
 
         $ps = <<<'PS'
             $ErrorActionPreference = 'Stop'
