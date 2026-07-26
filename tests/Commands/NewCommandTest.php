@@ -84,6 +84,7 @@ final class NewCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = new NewCommandHarness();
         $command->setConsoleForTest(new ConsoleHarness(['dry-run' => true]));
+        $command->setTemplateSourceForTest(\sys_get_temp_dir() . '/webisters-fake-template');
         $command->setDirectoryForTest(
             \sys_get_temp_dir() . '/webisters-dry-run-' . \uniqid('', true)
         );
@@ -151,6 +152,7 @@ final class NewCommandHarness extends NewCommand
     private int $composerExitCode = 0;
     private bool $interactive = false;
     private string $directory = '';
+    private false | string $templateSource = false;
     private bool $headerShownForTest = false;
     private bool $requiredExtensionsChecked = false;
     private bool $composerInstallTriggered = false;
@@ -173,6 +175,16 @@ final class NewCommandHarness extends NewCommand
     public function setDirectoryForTest(string $directory) : void
     {
         $this->directory = $directory;
+    }
+
+    public function setTemplateSourceForTest(false | string $source) : void
+    {
+        $this->templateSource = $source;
+    }
+
+    protected function getTemplateSource(string $package) : false | string
+    {
+        return $this->templateSource;
     }
 
     public function setConsoleForTest(Console $console) : void
