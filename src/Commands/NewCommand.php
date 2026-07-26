@@ -28,6 +28,7 @@ abstract class NewCommand extends Command
      * @var array<string, string>
      */
     protected array $options = [
+        '--dry-run' => 'Preview scaffolding without writing files.',
         '--no-install' => 'Skip composer install after scaffolding.',
         '--with-install' => 'Run composer install after scaffolding.',
     ];
@@ -148,13 +149,19 @@ abstract class NewCommand extends Command
 
     protected function create(string $package, string $name) : void
     {
+        if ($this->isDryRun()) {
+            $directory = $this->getDirectoryPath();
+            $this->showDryRunPlan($package, $name, $directory);
+            return;
+        }
+
         if (!$this->ensureRequiredExtensions()) {
             return;
         }
 
         $this->showHeaderOnce();
 
-        $directory = $this->getDirectoryPath();
+    $directory = $this->getDirectoryPath();
 
         $source = $this->getTemplateSource($package);
         if ($source) {
@@ -283,6 +290,50 @@ abstract class NewCommand extends Command
             }
 
             CLI::error('Please answer yes or no.', null);
+        }
+    }
+
+    protected function isDryRun() : bool
+    {
+        return (bool) $this->console->getOption('dry-run');
+    }
+
+    protected function showDryRunPlan(string $package, string $name, string $directory) : void
+    {
+        CLI::info('Dry run: no files will be written.');
+
+        $source = $this->getTemplateSource($package);
+        $projectName = $this->normalizePackageSegment((string) \basename($directory));
+        $projectDescription = $this->toHumanText($projectName) . ' ' . $name;
+
+        if ($source) {
+            CLI::write(
+                'Would copy the template from ' . $source . ' to ' . $directory,
+                ForegroundColor::yellow
+            );
+        } else {
+            CLI::write(
+                'Would run composer create-project --no-interaction --no-install '
+                . 'webisters/' . $package . ' ' . \escapeshellarg((string) \basename($directory)),
+                ForegroundColor::yellow
+            );
+        }
+
+        CLI::write(
+            'Would update composer.json to use name "webisters/' . $projectName . '".',
+            ForegroundColor::yellow
+        );
+        CLI::write(
+            'Would update composer.json description to "' . $projectDescription . '".',
+            ForegroundColor::yellow
+        );
+
+        if ($this->console->getOption('no-install')) {
+            CLI::write('Would skip composer install.', ForegroundColor::yellow);
+        } elseif ($this->console->getOption('with-install')) {
+            CLI::write('Would run composer install.', ForegroundColor::yellow);
+        } else {
+            CLI::write('Would prompt whether to run composer install.', ForegroundColor::yellow);
         }
     }
 
