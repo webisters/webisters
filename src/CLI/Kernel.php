@@ -11,10 +11,15 @@ namespace Webisters\CLI;
 
 use Framework\CLI\Console;
 use Webisters\Commands\Index;
+use Webisters\Commands\ListCommand;
+use Webisters\Commands\MakeController;
+use Webisters\Commands\MakeModel;
+use Webisters\Commands\MakeView;
 use Webisters\Commands\NewApi;
 use Webisters\Commands\NewApp;
 use Webisters\Commands\NewOne;
 use Webisters\Commands\NewSite;
+use Webisters\Commands\RouteList;
 use Webisters\Commands\Setup;
 
 final class Kernel
@@ -34,7 +39,12 @@ final class Kernel
 
         $console = new Console();
         $console->addCommand(Index::class);
+        $console->addCommand(ListCommand::class);
         $console->addCommand(Setup::class);
+        $console->addCommand(RouteList::class);
+        $console->addCommand(MakeView::class);
+        $console->addCommand(MakeModel::class);
+        $console->addCommand(MakeController::class);
         $console->addCommand(NewApp::class);
         $console->addCommand(NewApi::class);
         $console->addCommand(NewOne::class);
