@@ -80,6 +80,14 @@ If any of these extensions are missing you may see errors during `composer insta
 composer global require webisters/webisters
 ```
 
+### Restricted networks
+If you install behind a proxy, mirror, or other restricted network, make sure Composer can reach Packagist and GitHub before running the global install.
+
+- Set your proxy variables for the current shell, for example `HTTP_PROXY` and `HTTPS_PROXY`.
+- If Composer access is blocked, configure the proxy in Composer itself with `composer config -g http-proxy ...` and `composer config -g https-proxy ...`.
+- For fully offline environments, install from a machine that can reach the network first, then copy the Composer cache and vendor directories into the restricted environment.
+- If downloads still fail, rerun `composer global require webisters/webisters -vvv` to see the underlying network error.
+
 ### Windows: enable `webisters` command (recommended)
 This adds Composer's global `bin-dir` to your user PATH.
 
