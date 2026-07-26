@@ -20,6 +20,7 @@ use Webisters\Commands\NewApp;
 use Webisters\Commands\NewOne;
 use Webisters\Commands\NewSite;
 use Webisters\Commands\RouteList;
+use Webisters\Commands\SelfUpdate;
 use Webisters\Commands\Setup;
 
 final class Kernel
@@ -49,6 +50,7 @@ final class Kernel
         $console->addCommand(NewApi::class);
         $console->addCommand(NewOne::class);
         $console->addCommand(NewSite::class);
+        $console->addCommand(SelfUpdate::class);
         $console->run();
 
         return 0;
