@@ -10,6 +10,8 @@
 namespace Webisters\CLI;
 
 use Framework\CLI\Console;
+use Webisters\Commands\Check;
+use Webisters\Commands\Doctor;
 use Webisters\Commands\Index;
 use Webisters\Commands\ListCommand;
 use Webisters\Commands\MakeController;
@@ -39,6 +41,8 @@ final class Kernel
         $GLOBALS['argv'] = $argv;
 
         $console = new Console();
+        $console->addCommand(Check::class);
+        $console->addCommand(Doctor::class);
         $console->addCommand(Index::class);
         $console->addCommand(ListCommand::class);
         $console->addCommand(Setup::class);
