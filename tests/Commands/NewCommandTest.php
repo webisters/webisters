@@ -79,6 +79,27 @@ final class NewCommandTest extends \PHPUnit\Framework\TestCase
 
         self::assertTrue($command->shouldRunComposerInstallForTest());
     }
+
+    public function testDryRunPrintsPlannedActionsWithoutWritingFiles() : void
+    {
+        $command = new NewCommandHarness();
+        $command->setConsoleForTest(new ConsoleHarness(['dry-run' => true]));
+        $command->setDirectoryForTest(
+            \sys_get_temp_dir() . '/webisters-dry-run-' . \uniqid('', true)
+        );
+
+        Stderr::init();
+        Stdout::init();
+
+        $command->createForTest('app', 'App Project');
+
+        self::assertStringContainsString('Dry run: no files will be written.', Stdout::getContents());
+        self::assertStringContainsString('Would copy the template', Stdout::getContents());
+        self::assertFalse($command->wasHeaderShownForTest());
+        self::assertFalse($command->wasRequiredExtensionsCheckedForTest());
+        self::assertFalse($command->wasComposerInstallTriggeredForTest());
+        self::assertFalse($command->wasProjectFilesWrittenForTest());
+    }
 }
 
 final class ConsoleHarness extends Console
@@ -105,6 +126,11 @@ final class NewCommandHarness extends NewCommand
 
     private int $composerExitCode = 0;
     private bool $interactive = false;
+    private string $directory = '';
+    private bool $headerShownForTest = false;
+    private bool $requiredExtensionsChecked = false;
+    private bool $composerInstallTriggered = false;
+    private bool $projectFilesWritten = false;
 
     /**
      * @var array<int, string>
@@ -120,9 +146,74 @@ final class NewCommandHarness extends NewCommand
         $this->interactive = $interactive;
     }
 
+    public function setDirectoryForTest(string $directory) : void
+    {
+        $this->directory = $directory;
+    }
+
     public function setConsoleForTest(Console $console) : void
     {
         $this->setConsole($console);
+    }
+
+    public function createForTest(string $package, string $name) : void
+    {
+        $this->create($package, $name);
+    }
+
+    public function wasHeaderShownForTest() : bool
+    {
+        return $this->headerShownForTest;
+    }
+
+    public function wasRequiredExtensionsCheckedForTest() : bool
+    {
+        return $this->requiredExtensionsChecked;
+    }
+
+    public function wasComposerInstallTriggeredForTest() : bool
+    {
+        return $this->composerInstallTriggered;
+    }
+
+    public function wasProjectFilesWrittenForTest() : bool
+    {
+        return $this->projectFilesWritten;
+    }
+
+    protected function showHeaderOnce() : void
+    {
+        $this->headerShownForTest = true;
+    }
+
+    protected function ensureRequiredExtensions() : bool
+    {
+        $this->requiredExtensionsChecked = true;
+        return parent::ensureRequiredExtensions();
+    }
+
+    protected function ensureDirectoryExists(string $directory) : void
+    {
+        $this->projectFilesWritten = true;
+        parent::ensureDirectoryExists($directory);
+    }
+
+    protected function copyDir(string $source, string $directory) : void
+    {
+        $this->projectFilesWritten = true;
+        parent::copyDir($source, $directory);
+    }
+
+    protected function ensureProjectCliFile(string $directory) : void
+    {
+        $this->projectFilesWritten = true;
+        parent::ensureProjectCliFile($directory);
+    }
+
+    protected function updateComposerMetadata(string $directory, string $projectName, string $projectDescription) : void
+    {
+        $this->projectFilesWritten = true;
+        parent::updateComposerMetadata($directory, $projectName, $projectDescription);
     }
 
     public function shouldRunComposerInstallForTest() : bool
@@ -155,6 +246,17 @@ final class NewCommandHarness extends NewCommand
     public function createProjectWithComposerForTest(string $package, string $directory) : bool
     {
         return $this->createProjectWithComposer($package, $directory);
+    }
+
+    protected function runComposerInstall(string $directory) : void
+    {
+        $this->composerInstallTriggered = true;
+        parent::runComposerInstall($directory);
+    }
+
+    protected function getDirectoryPath() : string
+    {
+        return $this->directory;
     }
 
     /**

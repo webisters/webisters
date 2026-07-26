@@ -116,6 +116,7 @@ composer global exec webisters new-app my-app
 The CLI will download the project template using `composer create-project` and then ask whether to run `composer install`.
 
 Use `--no-install` to skip the install step or `--with-install` to run it without prompting.
+Use `--dry-run` to preview the scaffolded actions without writing files.
 
 ## Commands
 - `check` / `doctor`: report PHP, extension, and Composer status
