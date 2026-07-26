@@ -107,6 +107,8 @@ composer global exec webisters new-app my-app
 
 The CLI will download the project template using `composer create-project` and then ask whether to run `composer install`.
 
+Use `--no-install` to skip the install step or `--with-install` to run it without prompting.
+
 ## Commands
 - `list`: show available `new-*` and `make:*` generators
 - `setup` (Windows): adds Composer global bin-dir to PATH
