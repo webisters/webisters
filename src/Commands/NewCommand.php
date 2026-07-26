@@ -205,13 +205,25 @@ abstract class NewCommand extends Command
         }
 
         try {
-            $exitCode = 1;
-            \passthru($cmd, $exitCode);
+            $output = [];
+            $exitCode = $this->executeComposerCreateProject($cmd, $output);
         } finally {
             \chdir($currentDirectory);
         }
 
         if ($exitCode !== 0 || !\is_dir($directory)) {
+            CLI::error('Composer create-project failed with exit code ' . $exitCode . '.', null);
+
+            if ($output !== []) {
+                CLI::write('Composer output:', ForegroundColor::yellow);
+                foreach ($output as $line) {
+                    if (\trim($line) === '') {
+                        continue;
+                    }
+                    CLI::write('  ' . $line, ForegroundColor::yellow);
+                }
+            }
+
             CLI::error('Failed to download template. Make sure composer is installed and the package exists on Packagist.', null);
             return false;
         }
@@ -399,6 +411,16 @@ abstract class NewCommand extends Command
     {
         $exitCode = 1;
         \passthru($command, $exitCode);
+        return $exitCode;
+    }
+
+    /**
+     * @param array<int, string> $output
+     */
+    protected function executeComposerCreateProject(string $command, array &$output) : int
+    {
+        $exitCode = 1;
+        \exec($command . ' 2>&1', $output, $exitCode);
         return $exitCode;
     }
 
