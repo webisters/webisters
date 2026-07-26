@@ -9,6 +9,7 @@
  */
 namespace Tests\Commands;
 
+use Framework\CLI\Console;
 use Framework\CLI\Streams\Stderr;
 use Framework\CLI\Streams\Stdout;
 use Webisters\Commands\SelfUpdate;
@@ -18,7 +19,20 @@ use Webisters\Commands\SelfUpdate;
  */
 final class SelfUpdateTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSelfUpdateSuccess() : void
+    public function testUpdateCommandIsRegistered() : void
+    {
+        $console = new Console();
+        $command = new SelfUpdateHarness();
+        $command->setResult(0, []);
+        $console->addCommand($command);
+
+        Stdout::init();
+        $console->exec('update');
+
+        self::assertStringContainsString('Webisters is up to date.', Stdout::getContents());
+    }
+
+    public function testUpdateSuccess() : void
     {
         $command = new SelfUpdateHarness();
         $command->setResult(0, ['Updated 1 package']);
@@ -30,7 +44,7 @@ final class SelfUpdateTest extends \PHPUnit\Framework\TestCase
         self::assertStringContainsString('Webisters is up to date.', Stdout::getContents());
     }
 
-    public function testSelfUpdateFailureShowsComposerOutput() : void
+    public function testUpdateFailureShowsComposerOutput() : void
     {
         $command = new SelfUpdateHarness();
         $command->setResult(1, ['Could not reach packagist.org']);

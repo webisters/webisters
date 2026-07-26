@@ -19,9 +19,9 @@ use Framework\CLI\Command;
  */
 class SelfUpdate extends Command
 {
-    protected string $name = 'self-update';
+    protected string $name = 'update';
     protected string $description = 'Updates the global Webisters CLI to the latest version.';
-    protected string $usage = 'self-update';
+    protected string $usage = 'update';
 
     public function run() : void
     {

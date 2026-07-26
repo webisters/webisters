@@ -110,7 +110,7 @@ The CLI will download the project template using `composer create-project` and t
 ## Commands
 - `list`: show available `new-*` and `make:*` generators
 - `setup` (Windows): adds Composer global bin-dir to PATH
-- `self-update`: update the global Webisters CLI with Composer
+- `update`: update the global Webisters CLI with Composer
 - `new-app <name>`: create an App project
 - `new-api <name>`: create an API project
 - `new-one <name>`: create a One project
