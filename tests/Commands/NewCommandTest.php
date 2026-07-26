@@ -9,6 +9,7 @@
  */
 namespace Tests\Commands;
 
+use Framework\CLI\Console;
 use Framework\CLI\Streams\Stderr;
 use Framework\CLI\Streams\Stdout;
 use Webisters\Commands\NewCommand;
@@ -60,6 +61,40 @@ final class NewCommandTest extends \PHPUnit\Framework\TestCase
         self::assertStringContainsString('Composer output:', Stdout::getContents());
         self::assertStringContainsString('Could not resolve host', Stdout::getContents());
     }
+
+    public function testShouldRunComposerInstallHonorsNoInstallOption() : void
+    {
+        $command = new NewCommandHarness();
+        $command->setInteractiveInputForTest(false);
+        $command->setConsoleForTest(new ConsoleHarness(['no-install' => true]));
+
+        self::assertFalse($command->shouldRunComposerInstallForTest());
+    }
+
+    public function testShouldRunComposerInstallHonorsWithInstallOption() : void
+    {
+        $command = new NewCommandHarness();
+        $command->setInteractiveInputForTest(false);
+        $command->setConsoleForTest(new ConsoleHarness(['with-install' => true]));
+
+        self::assertTrue($command->shouldRunComposerInstallForTest());
+    }
+}
+
+final class ConsoleHarness extends Console
+{
+    /**
+     * @param array<string, bool|string> $options
+     */
+    public function __construct(private array $testOptions = [])
+    {
+        parent::__construct();
+    }
+
+    public function getOption(string $option) : bool | string | null
+    {
+        return $this->testOptions[$option] ?? null;
+    }
 }
 
 final class NewCommandHarness extends NewCommand
@@ -69,6 +104,7 @@ final class NewCommandHarness extends NewCommand
     protected string $usage = 'new-harness';
 
     private int $composerExitCode = 0;
+    private bool $interactive = false;
 
     /**
      * @var array<int, string>
@@ -77,6 +113,21 @@ final class NewCommandHarness extends NewCommand
 
     public function run() : void
     {
+    }
+
+    public function setInteractiveInputForTest(bool $interactive) : void
+    {
+        $this->interactive = $interactive;
+    }
+
+    public function setConsoleForTest(Console $console) : void
+    {
+        $this->setConsole($console);
+    }
+
+    public function shouldRunComposerInstallForTest() : bool
+    {
+        return $this->shouldRunComposerInstall();
     }
 
     /**
@@ -113,5 +164,10 @@ final class NewCommandHarness extends NewCommand
     {
         $output = $this->composerOutput;
         return $this->composerExitCode;
+    }
+
+    protected function isInteractiveInput() : bool
+    {
+        return $this->interactive;
     }
 }

@@ -24,6 +24,13 @@ abstract class NewCommand extends Command
 {
     protected ?string $projectNameFromPrompt = null;
     protected bool $headerShown = false;
+    /**
+     * @var array<string, string>
+     */
+    protected array $options = [
+        '--no-install' => 'Skip composer install after scaffolding.',
+        '--with-install' => 'Run composer install after scaffolding.',
+    ];
 
     /**
      * PHP extensions that must be enabled before creating a project. The
@@ -249,6 +256,14 @@ abstract class NewCommand extends Command
 
     protected function shouldRunComposerInstall() : bool
     {
+        if ($this->console->getOption('no-install')) {
+            return false;
+        }
+
+        if ($this->console->getOption('with-install')) {
+            return true;
+        }
+
         if (!$this->isInteractiveInput()) {
             return false;
         }
