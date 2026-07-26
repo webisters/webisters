@@ -60,8 +60,6 @@ final class KernelTest extends \PHPUnit\Framework\TestCase
         $method->setAccessible(true);
 
         /** @var array<int, string>|null $normalized */
-        $normalized = $method->invoke($kernel, $argv);
-
-        return $normalized;
+        return $method->invoke($kernel, $argv);
     }
 }
