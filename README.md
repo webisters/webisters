@@ -108,6 +108,7 @@ composer global exec webisters new-app my-app
 The CLI will download the project template using `composer create-project` and then ask whether to run `composer install`.
 
 ## Commands
+- `list`: show available `new-*` and `make:*` generators
 - `setup` (Windows): adds Composer global bin-dir to PATH
 - `new-app <name>`: create an App project
 - `new-api <name>`: create an API project
