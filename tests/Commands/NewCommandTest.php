@@ -100,6 +100,30 @@ final class NewCommandTest extends \PHPUnit\Framework\TestCase
         self::assertFalse($command->wasComposerInstallTriggeredForTest());
         self::assertFalse($command->wasProjectFilesWrittenForTest());
     }
+
+    public function testDryRunPreviewsPlanWhenTargetDirectoryAlreadyExists() : void
+    {
+        $existing = \sys_get_temp_dir() . '/webisters-dry-run-existing-' . \uniqid('', true);
+        \mkdir($existing, 0755, true);
+
+        try {
+            $command = new NewCommandHarness();
+            $command->setConsoleForTest(new ConsoleHarness(['dry-run' => true]));
+            $command->setDirectoryForTest($existing);
+
+            Stderr::init();
+            Stdout::init();
+
+            $command->createForTest('app', 'App Project');
+
+            self::assertStringContainsString('Dry run: no files will be written.', Stdout::getContents());
+            self::assertStringContainsString('already exists', Stdout::getContents());
+            self::assertStringNotContainsString('already exists', Stderr::getContents());
+            self::assertFalse($command->wasProjectFilesWrittenForTest());
+        } finally {
+            @\rmdir($existing);
+        }
+    }
 }
 
 final class ConsoleHarness extends Console
@@ -255,6 +279,11 @@ final class NewCommandHarness extends NewCommand
     }
 
     protected function getDirectoryPath() : string
+    {
+        return $this->directory;
+    }
+
+    protected function resolveDirectoryPath() : string
     {
         return $this->directory;
     }

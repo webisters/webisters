@@ -150,7 +150,7 @@ abstract class NewCommand extends Command
     protected function create(string $package, string $name) : void
     {
         if ($this->isDryRun()) {
-            $directory = $this->getDirectoryPath();
+            $directory = $this->resolveDirectoryPath();
             $this->showDryRunPlan($package, $name, $directory);
             return;
         }
@@ -161,7 +161,7 @@ abstract class NewCommand extends Command
 
         $this->showHeaderOnce();
 
-    $directory = $this->getDirectoryPath();
+        $directory = $this->getDirectoryPath();
 
         $source = $this->getTemplateSource($package);
         if ($source) {
@@ -301,6 +301,14 @@ abstract class NewCommand extends Command
     protected function showDryRunPlan(string $package, string $name, string $directory) : void
     {
         CLI::info('Dry run: no files will be written.');
+
+        if (\file_exists($directory)) {
+            CLI::write(
+                'Note: "' . $directory . '" already exists. A real run would abort'
+                . ' before scaffolding because the target path must be empty.',
+                ForegroundColor::yellow
+            );
+        }
 
         $source = $this->getTemplateSource($package);
         $projectName = $this->normalizePackageSegment((string) \basename($directory));
@@ -682,6 +690,22 @@ abstract class NewCommand extends Command
 
     protected function getDirectoryPath() : string
     {
+        $directory = $this->resolveDirectoryPath();
+        if (\file_exists($directory)) {
+            CLI::error(\sprintf('The path "%s" already exists', $directory));
+        }
+        return $directory;
+    }
+
+    /**
+     * Resolve the absolute target directory without asserting it is free.
+     *
+     * Path resolution is separated from the "already exists" guard so a
+     * dry run can preview the plan for any path, including one that already
+     * exists, without aborting.
+     */
+    protected function resolveDirectoryPath() : string
+    {
         $directory = $this->console->getArgument(0);
         if ($directory === null) {
             $directory = $this->promptDirectory();
@@ -689,11 +713,7 @@ abstract class NewCommand extends Command
         if (!$this->isAbsolutePath($directory)) {
             $directory = $this->joinPath((string) \getcwd(), $directory);
         }
-        $directory = $this->normalizePath($directory);
-        if (\file_exists($directory)) {
-            CLI::error(\sprintf('The path "%s" already exists', $directory));
-        }
-        return $directory;
+        return $this->normalizePath($directory);
     }
 
     protected function promptDirectory() : string

@@ -22,14 +22,13 @@ final class NewApiTest extends TestCase
     public function testNewApi() : void
     {
         $dir = \sys_get_temp_dir() . '/webisters-api';
-        if (\is_dir($dir)) {
-            \rmdir($dir);
-        }
+        $this->deleteDirectory($dir);
         Stdout::init();
-        $this->console->exec('new-api ' . $dir);
+        $this->console->exec('new-api --no-install ' . $dir);
         self::assertStringContainsString(
             'API Project structure created at "' . $dir . '"',
             Stdout::getContents()
         );
+        $this->deleteDirectory($dir);
     }
 }
