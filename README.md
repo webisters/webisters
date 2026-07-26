@@ -110,6 +110,7 @@ The CLI will download the project template using `composer create-project` and t
 Use `--no-install` to skip the install step or `--with-install` to run it without prompting.
 
 ## Commands
+- `check` / `doctor`: report PHP, extension, and Composer status
 - `list`: show available `new-*` and `make:*` generators
 - `setup` (Windows): adds Composer global bin-dir to PATH
 - `update`: update the global Webisters CLI with Composer
