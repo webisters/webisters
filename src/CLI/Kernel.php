@@ -28,6 +28,19 @@ use Webisters\Commands\Setup;
 final class Kernel
 {
     /**
+     * Maps the grouped "new <type>" alias to the corresponding registered
+     * "new-<type>" command name.
+     *
+     * @var array<string, string>
+     */
+    private const NEW_ALIASES = [
+        'app' => 'new-app',
+        'api' => 'new-api',
+        'one' => 'new-one',
+        'site' => 'new-site',
+    ];
+
+    /**
      * @param array<int, string> $argv
      */
     public function run(array $argv) : int
@@ -61,19 +74,6 @@ final class Kernel
     }
 
     /**
-     * Maps the grouped "new <type>" alias to the corresponding registered
-     * "new-<type>" command name.
-     *
-     * @var array<string, string>
-     */
-    private const NEW_ALIASES = [
-        'app' => 'new-app',
-        'api' => 'new-api',
-        'one' => 'new-one',
-        'site' => 'new-site',
-    ];
-
-    /**
      * Rewrites the grouped alias form of the scaffolding commands into the
      * flat form the Console actually registers.
      *
@@ -102,7 +102,7 @@ final class Kernel
         }
 
         $type = $argv[2] ?? null;
-        if ($type === null || ! isset(self::NEW_ALIASES[$type])) {
+        if ($type === null || !isset(self::NEW_ALIASES[$type])) {
             $this->printUsage();
             return null;
         }
