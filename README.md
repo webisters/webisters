@@ -161,7 +161,10 @@ This adds Composer's global `bin-dir` to your user PATH.
 composer global exec webisters setup
 ```
 
-Restart your terminal after running setup.
+Setup writes to your **user** PATH, so open a **new** terminal afterward. Command Prompt,
+PowerShell, and Git Bash all read the updated user PATH, but any session that was already
+open will not see the change until you reopen it. In the new terminal, verify with
+`webisters --version` (or `where webisters`).
 
 ## Create a Project
 Preferred (after PATH setup):
