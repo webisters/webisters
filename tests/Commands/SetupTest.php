@@ -64,7 +64,7 @@ final class SetupTest extends \PHPUnit\Framework\TestCase
     public function testBinDirFallbackToAppData() : void
     {
         $original = \getenv('APPDATA');
-        \putenv('APPDATA=C:\\Users\\dev\\AppData\\Roaming');
+        \putenv('APPDATA=C:\Users\dev\AppData\Roaming');
 
         try {
             $command = new SetupHarness();
