@@ -46,19 +46,6 @@ final class KernelTest extends \PHPUnit\Framework\TestCase
         self::assertSame(['webisters', $alias, 'demo'], $normalized);
     }
 
-    /**
-     * @return array<string, array{0: string, 1: string}>
-     */
-    public static function groupedTypeProvider() : array
-    {
-        return [
-            'app'  => ['app', 'new-app'],
-            'api'  => ['api', 'new-api'],
-            'one'  => ['one', 'new-one'],
-            'site' => ['site', 'new-site'],
-        ];
-    }
-
     public function testNormalizeArgvPassesThroughNonNewCommand() : void
     {
         $kernel = new Kernel();
@@ -149,5 +136,18 @@ final class KernelTest extends \PHPUnit\Framework\TestCase
 
         /** @var array<int, string>|null $normalized */
         return $method->invoke($kernel, $argv);
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function groupedTypeProvider() : array
+    {
+        return [
+            'app' => ['app', 'new-app'],
+            'api' => ['api', 'new-api'],
+            'one' => ['one', 'new-one'],
+            'site' => ['site', 'new-site'],
+        ];
     }
 }
