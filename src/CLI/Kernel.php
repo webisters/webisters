@@ -61,9 +61,38 @@ final class Kernel
     }
 
     /**
+     * Maps the grouped "new <type>" alias to the corresponding registered
+     * "new-<type>" command name.
+     *
+     * @var array<string, string>
+     */
+    private const NEW_ALIASES = [
+        'app' => 'new-app',
+        'api' => 'new-api',
+        'one' => 'new-one',
+        'site' => 'new-site',
+    ];
+
+    /**
+     * Rewrites the grouped alias form of the scaffolding commands into the
+     * flat form the Console actually registers.
+     *
+     * The Console only knows the flat commands (`new-app`, `new-api`,
+     * `new-one`, `new-site`). To also accept the friendlier grouped form
+     * (`webisters new app <name>`), this method rewrites the argv in place
+     * before the Console sees it. Every other invocation is passed through
+     * untouched, so calling the flat commands directly still works.
+     *
+     * Paths:
+     *   - `$argv[1]` is not `new`           -> returned unchanged (passthrough)
+     *   - type is missing or unknown        -> usage printed, returns null
+     *   - name is missing or blank          -> usage printed, returns null
+     *   - valid `new <type> <name> [...]`   -> rewritten to `new-<type> <name> [...]`
+     *
      * @param array<int, string> $argv
      *
-     * @return array<int, string>|null
+     * @return array<int, string>|null the rewritten argv, or null when the
+     *                                 grouped form was malformed
      */
     private function normalizeArgv(array $argv) : ?array
     {
@@ -73,7 +102,7 @@ final class Kernel
         }
 
         $type = $argv[2] ?? null;
-        if ($type !== 'app' && $type !== 'api' && $type !== 'one' && $type !== 'site') {
+        if ($type === null || ! isset(self::NEW_ALIASES[$type])) {
             $this->printUsage();
             return null;
         }
@@ -86,11 +115,7 @@ final class Kernel
 
         $normalized = [
             $argv[0] ?? 'webisters',
-            $type === 'app'
-                ? 'new-app'
-                : ($type === 'api'
-                    ? 'new-api'
-                    : ($type === 'one' ? 'new-one' : 'new-site')),
+            self::NEW_ALIASES[$type],
             $name,
         ];
 
