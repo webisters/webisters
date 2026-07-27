@@ -11,6 +11,7 @@ namespace Webisters\CLI;
 
 use Framework\CLI\Console;
 use Webisters\Commands\Check;
+use Webisters\Commands\Completion;
 use Webisters\Commands\Doctor;
 use Webisters\Commands\Index;
 use Webisters\Commands\ListCommand;
@@ -55,6 +56,7 @@ final class Kernel
 
         $console = new Console();
         $console->addCommand(Check::class);
+        $console->addCommand(Completion::class);
         $console->addCommand(Doctor::class);
         $console->addCommand(Index::class);
         $console->addCommand(ListCommand::class);
