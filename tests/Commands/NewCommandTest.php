@@ -84,6 +84,7 @@ final class NewCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = new NewCommandHarness();
         $command->setConsoleForTest(new ConsoleHarness(['dry-run' => true]));
+        $command->setTemplateSourceForTest(\sys_get_temp_dir() . '/webisters-fake-template');
         $command->setDirectoryForTest(
             \sys_get_temp_dir() . '/webisters-dry-run-' . \uniqid('', true)
         );
@@ -99,6 +100,30 @@ final class NewCommandTest extends \PHPUnit\Framework\TestCase
         self::assertFalse($command->wasRequiredExtensionsCheckedForTest());
         self::assertFalse($command->wasComposerInstallTriggeredForTest());
         self::assertFalse($command->wasProjectFilesWrittenForTest());
+    }
+
+    public function testDryRunPreviewsPlanWhenTargetDirectoryAlreadyExists() : void
+    {
+        $existing = \sys_get_temp_dir() . '/webisters-dry-run-existing-' . \uniqid('', true);
+        \mkdir($existing, 0755, true);
+
+        try {
+            $command = new NewCommandHarness();
+            $command->setConsoleForTest(new ConsoleHarness(['dry-run' => true]));
+            $command->setDirectoryForTest($existing);
+
+            Stderr::init();
+            Stdout::init();
+
+            $command->createForTest('app', 'App Project');
+
+            self::assertStringContainsString('Dry run: no files will be written.', Stdout::getContents());
+            self::assertStringContainsString('already exists', Stdout::getContents());
+            self::assertStringNotContainsString('already exists', Stderr::getContents());
+            self::assertFalse($command->wasProjectFilesWrittenForTest());
+        } finally {
+            @\rmdir($existing);
+        }
     }
 }
 
@@ -127,6 +152,7 @@ final class NewCommandHarness extends NewCommand
     private int $composerExitCode = 0;
     private bool $interactive = false;
     private string $directory = '';
+    private false | string $templateSource = false;
     private bool $headerShownForTest = false;
     private bool $requiredExtensionsChecked = false;
     private bool $composerInstallTriggered = false;
@@ -149,6 +175,16 @@ final class NewCommandHarness extends NewCommand
     public function setDirectoryForTest(string $directory) : void
     {
         $this->directory = $directory;
+    }
+
+    public function setTemplateSourceForTest(false | string $source) : void
+    {
+        $this->templateSource = $source;
+    }
+
+    protected function getTemplateSource(string $package) : false | string
+    {
+        return $this->templateSource;
     }
 
     public function setConsoleForTest(Console $console) : void
@@ -255,6 +291,11 @@ final class NewCommandHarness extends NewCommand
     }
 
     protected function getDirectoryPath() : string
+    {
+        return $this->directory;
+    }
+
+    protected function resolveDirectoryPath() : string
     {
         return $this->directory;
     }
