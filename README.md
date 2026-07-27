@@ -81,12 +81,78 @@ composer global require webisters/webisters
 ```
 
 ### Restricted networks
-If you install behind a proxy, mirror, or other restricted network, make sure Composer can reach Packagist and GitHub before running the global install.
+If you install behind a proxy, mirror, or other restricted network, make sure Composer can reach Packagist and GitHub before running the global install. The global installer and the `new-*` commands both shell out to Composer, so anything that makes `composer` work on your network makes Webisters work too.
 
-- Set your proxy variables for the current shell, for example `HTTP_PROXY` and `HTTPS_PROXY`.
-- If Composer access is blocked, configure the proxy in Composer itself with `composer config -g http-proxy ...` and `composer config -g https-proxy ...`.
-- For fully offline environments, install from a machine that can reach the network first, then copy the Composer cache and vendor directories into the restricted environment.
-- If downloads still fail, rerun `composer global require webisters/webisters -vvv` to see the underlying network error.
+**Behind a proxy**
+
+- Set proxy variables for the current shell, for example:
+
+  ```bash
+  export HTTP_PROXY="http://user:pass@proxy.example.com:8080"
+  export HTTPS_PROXY="http://user:pass@proxy.example.com:8080"
+  export NO_PROXY="localhost,127.0.0.1"   # hosts that must bypass the proxy
+  ```
+
+- Or configure the proxy in Composer itself so it persists across shells:
+
+  ```bash
+  composer config -g http-proxy  http://proxy.example.com:8080
+  composer config -g https-proxy http://proxy.example.com:8080
+  ```
+
+- If your proxy performs TLS inspection, point Composer/PHP at your corporate CA bundle so certificate verification succeeds:
+
+  ```bash
+  composer config -g cafile /path/to/corporate-ca-bundle.pem
+  ```
+
+**Using a package mirror**
+
+If Packagist itself is blocked but a mirror is available, route Composer through it:
+
+```bash
+composer config -g repos.packagist composer https://packagist.mirror.example.com
+```
+
+**Fully offline / air-gapped environments**
+
+1. On a machine that *can* reach the network, warm the Composer cache and install once:
+
+   ```bash
+   composer global require webisters/webisters
+   ```
+
+2. Copy the Composer home directory (contains the cache and the global `vendor/`) to the restricted machine. Find it with `composer config -g home` (commonly `~/.composer` or `~/.config/composer`).
+3. On the restricted machine, run Composer with the cache treated as authoritative so it never reaches the network:
+
+   ```bash
+   export COMPOSER_CACHE_DIR="/path/to/copied/cache"
+   composer global require webisters/webisters --prefer-dist
+   ```
+
+**Creating projects offline**
+
+The `new-*` commands download the project template with
+`composer create-project` and then optionally run `composer install`. In a
+restricted environment, scaffold without touching the network for the
+dependency install step by skipping it:
+
+```bash
+webisters new-app my-app --no-install
+```
+
+Then run `composer install` yourself once dependencies are reachable (or from
+a warmed cache as above). Use `--with-install` to force the install step when
+you know the network is available.
+
+**Diagnosing failures**
+
+- Run `webisters check` to confirm PHP, required extensions, and Composer are detected.
+- If downloads still fail, rerun the failing command with high verbosity to see the underlying network error:
+
+  ```bash
+  composer global require webisters/webisters -vvv
+  ```
 
 ### Windows: enable `webisters` command (recommended)
 This adds Composer's global `bin-dir` to your user PATH.
