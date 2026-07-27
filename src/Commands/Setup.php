@@ -15,7 +15,7 @@ use Framework\CLI\Command;
 /**
  * Adds Composer global bin directory to PATH.
  */
-final class Setup extends Command
+class Setup extends Command
 {
     protected string $name = 'setup';
     protected string $description = 'Configures your environment for the webisters command.';
@@ -30,7 +30,7 @@ final class Setup extends Command
             return;
         }
 
-        if (\PHP_OS_FAMILY !== 'Windows') {
+        if (!$this->isWindows()) {
             CLI::info('Automatic PATH setup is currently supported on Windows only.');
             CLI::write('Composer global bin-dir: ' . $binDir);
             $this->printManualInstructions($binDir);
@@ -40,9 +40,9 @@ final class Setup extends Command
         $this->setupWindowsPath($binDir);
     }
 
-    private function resolveComposerGlobalBinDir() : ?string
+    protected function resolveComposerGlobalBinDir() : ?string
     {
-        $output = @\shell_exec('composer global config bin-dir --absolute 2>NUL');
+        $output = $this->executeComposerBinDir();
         if (\is_string($output)) {
             $binDir = \trim($output);
             if ($binDir !== '') {
@@ -59,7 +59,7 @@ final class Setup extends Command
         return null;
     }
 
-    private function setupWindowsPath(string $binDir) : void
+    protected function setupWindowsPath(string $binDir) : void
     {
         $binDir = \rtrim($binDir, '\/');
 
@@ -85,11 +85,18 @@ final class Setup extends Command
         $command = 'powershell -NoProfile -ExecutionPolicy Bypass -Command ' . \escapeshellarg($ps)
             . ' -- ' . \escapeshellarg($binDir);
 
-        $result = @\shell_exec($command);
+        $result = $this->executePowerShellSetPath($command);
         $result = \is_string($result) ? \trim($result) : '';
 
         if ($result === 'already') {
             CLI::success('PATH is already configured.');
+            CLI::write('Bin dir: ' . $binDir);
+            CLI::newLine();
+            CLI::info('If webisters is still not found, open a NEW terminal.');
+            CLI::write('Command Prompt, PowerShell, and Git Bash all read the updated user PATH,');
+            CLI::write('but a session opened before setup ran will not see it.');
+            CLI::newLine();
+            CLI::write('Verify with: webisters --version  (or: where webisters)');
             CLI::write('You can now run: webisters new-app <name>');
             return;
         }
@@ -97,7 +104,14 @@ final class Setup extends Command
         if ($result === 'added') {
             CLI::success('Added Composer global bin directory to your user PATH.');
             CLI::write('Bin dir: ' . $binDir);
-            CLI::info('Restart your terminal for changes to take effect.');
+            CLI::newLine();
+            CLI::info('Open a NEW terminal for the change to take effect.');
+            CLI::write('Command Prompt, PowerShell, and Git Bash all read the updated user PATH,');
+            CLI::write('but sessions that were already open will not see it until you reopen them.');
+            CLI::newLine();
+            CLI::write('Verify in the new terminal with:');
+            CLI::write('  webisters --version');
+            CLI::write('  where webisters');
             CLI::write('Then you can run: webisters new-app <name>');
             return;
         }
@@ -107,13 +121,13 @@ final class Setup extends Command
         $this->printManualInstructions($binDir);
     }
 
-    private function printManualInstructions(?string $binDir = null) : void
+    protected function printManualInstructions(?string $binDir = null) : void
     {
         if ($binDir === null) {
             $binDir = '<composer-global-bin-dir>';
         }
 
-        if (\PHP_OS_FAMILY === 'Windows') {
+        if ($this->isWindows()) {
             CLI::write('Manual fallback (Windows):');
             CLI::write('  Add this to your user PATH: ' . $binDir);
             CLI::write('  Or run commands without PATH using: composer global exec webisters <command>');
@@ -123,5 +137,20 @@ final class Setup extends Command
         CLI::write('Manual fallback (Linux/macOS):');
         CLI::write('  export PATH="' . $binDir . ':$PATH"');
         CLI::write('  Or run commands without PATH using: composer global exec webisters <command>');
+    }
+
+    protected function isWindows() : bool
+    {
+        return \PHP_OS_FAMILY === 'Windows';
+    }
+
+    protected function executeComposerBinDir() : ?string
+    {
+        return @\shell_exec('composer global config bin-dir --absolute 2>NUL');
+    }
+
+    protected function executePowerShellSetPath(string $command) : ?string
+    {
+        return @\shell_exec($command);
     }
 }
