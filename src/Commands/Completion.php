@@ -23,17 +23,16 @@ use Framework\CLI\Command;
  */
 class Completion extends Command
 {
-    protected string $name = 'completion';
-    protected string $description = 'Prints a bash or zsh completion script.';
-    protected string $usage = 'completion [bash|zsh]';
-    protected string $group = 'Diagnostics';
-
     /**
      * The subtypes accepted by the grouped `new <type>` form.
      *
      * @var array<int, string>
      */
     private const NEW_TYPES = ['app', 'api', 'one', 'site'];
+    protected string $name = 'completion';
+    protected string $description = 'Prints a bash or zsh completion script.';
+    protected string $usage = 'completion [bash|zsh]';
+    protected string $group = 'Diagnostics';
 
     public function run() : void
     {
