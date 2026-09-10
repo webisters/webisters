@@ -34,9 +34,10 @@
     ],
     "require": {
         "php": ">=8.2",
-        "webisters/framework": "^1.0"
+        "webisters/framework": "^2.0"
     },
     "require-dev": {
+        "psr/simple-cache": "^3.0",
         "webisters/coding-standard": "^1.0",
         "phpunit/phpunit": "^9.5"
     },
