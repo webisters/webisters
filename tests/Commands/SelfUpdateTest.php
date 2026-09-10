@@ -66,14 +66,14 @@ final class SelfUpdateHarness extends SelfUpdate
      */
     private array $output = [];
 
-    private int $exitCode = 0;
+    private int $composerExitCode = 0;
 
     /**
      * @param array<int, string> $output
      */
     public function setResult(int $exitCode, array $output) : void
     {
-        $this->exitCode = $exitCode;
+        $this->composerExitCode = $exitCode;
         $this->output = $output;
     }
 
@@ -83,6 +83,6 @@ final class SelfUpdateHarness extends SelfUpdate
     protected function executeComposerUpdate(string $command, array &$output) : int
     {
         $output = $this->output;
-        return $this->exitCode;
+        return $this->composerExitCode;
     }
 }
